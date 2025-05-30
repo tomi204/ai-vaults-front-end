@@ -5,13 +5,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { VaultCard } from "./vault-card";
-import { StatsOverview } from "./stats-overview";
-import { TransactionHistory } from "./transaction-history";
-import { NavBar } from "./nav-bar";
-import { ProtocolList } from "./protocol-list";
+import { VaultCard } from "@/components/vault-card";
+import { StatsOverview } from "@/components/stats-overview";
+import { TransactionHistory } from "@/components/transaction-history";
+import { NavBar } from "@/components/nav-bar";
+import { ProtocolList } from "@/components/protocol-list";
+import { MiniKit } from "@worldcoin/minikit-js";
 
-const MOCK_VAULTS = [
+interface VaultData {
+  id: string;
+  name: string;
+  description: string;
+  blockchain: string;
+  apy: number;
+  tvl: number;
+  riskLevel: string;
+  aiStrategy: string;
+  performance: number;
+  deposits: number;
+  allocation: Record<string, number>;
+}
+
+const MOCK_VAULTS: VaultData[] = [
   {
     id: "1",
     name: "Ethereum Prime Vault",
@@ -85,7 +100,7 @@ export function DashboardLayout() {
   const [selectedVault, setSelectedVault] = useState(MOCK_VAULTS[0]);
   const [activeTab, setActiveTab] = useState("overview");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  console.log(MiniKit.isInstalled(), "isInstalled");
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
       <div className="flex flex-col lg:flex-row">
