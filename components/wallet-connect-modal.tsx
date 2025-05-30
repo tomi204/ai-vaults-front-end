@@ -75,11 +75,42 @@ export function WalletConnectModal({
     setIsConnecting(true);
 
     try {
-      await connectWorldcoin();
-      onWalletConnected?.();
+      // Add a small delay to ensure the modal is closed before starting the connection
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const result = await connectWorldcoin();
+      
+      if (result.success) {
+        console.log("Connected with Worldcoin:", {
+          address: result.address,
+          username: result.username
+        });
+        onWalletConnected?.();
+      } else {
+        throw new Error("Connection was not successful");
+      }
     } catch (error) {
       console.error("Worldcoin connection failed:", error);
-      alert("Connection failed. Please try again.");
+      
+      // More specific error messages based on the error type
+      if (error instanceof Error) {
+        if (error.message.includes("not installed")) {
+          alert("World App is not installed. Please install it to continue.");
+        } else if (error.message.includes("user rejected")) {
+          alert("Connection was rejected. Please try again.");
+        } else if (error.message.includes("timeout")) {
+          alert("Connection timed out. Please try again.");
+        } else if (error.message.includes("Failed to get wallet address")) {
+          alert("Failed to get wallet address. Please try again.");
+        } else {
+          alert("Connection failed: " + error.message);
+        }
+      } else {
+        alert("Connection failed. Please try again.");
+      }
+      
+      // Reopen the modal if connection fails
+      onOpenChange(true);
     } finally {
       setIsConnecting(false);
     }

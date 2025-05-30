@@ -10,6 +10,18 @@ import {
 import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { MiniKit } from "@worldcoin/minikit-js";
 
+// Add type declarations for window.MiniKit
+declare global {
+  interface Window {
+    MiniKit?: {
+      walletAddress?: string;
+      user?: {
+        username?: string;
+      };
+    };
+  }
+}
+
 interface WalletContextType {
   // Estado general
   isConnected: boolean;
@@ -135,11 +147,11 @@ export function useWorldcoin() {
     }
 
     try {
-      // Generar nonce
+      // Generate nonce
       const nonceRes = await fetch("/api/nonce");
       const { nonce } = await nonceRes.json();
 
-      // Autenticación con wallet
+      // Authentication with wallet
       const { finalPayload } = await MiniKit.commandsAsync.walletAuth({
         nonce: nonce,
         requestId: "0",
@@ -154,7 +166,7 @@ export function useWorldcoin() {
         throw new Error("Worldcoin authentication failed");
       }
 
-      // Verificar en backend
+      // Verify in backend
       const response = await fetch("/api/complete-siwe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -162,12 +174,27 @@ export function useWorldcoin() {
       });
 
       const result = await response.json();
+      
       if (result.status === "success" && result.isValid) {
-        // Por ahora, simulamos una dirección conectada exitosamente
-        wallet.setWorldcoinAddress("0xWorldcoin...Connected");
-        return true;
+        // Get the wallet address from MiniKit
+        const walletAddress = window.MiniKit?.walletAddress;
+        if (!walletAddress) {
+          throw new Error("Failed to get wallet address");
+        }
+        
+        // Get the username if available
+        const username = window.MiniKit?.user?.username;
+        
+        // Set the wallet address in our context
+        wallet.setWorldcoinAddress(walletAddress);
+        
+        return {
+          success: true,
+          address: walletAddress,
+          username: username
+        };
       } else {
-        throw new Error("Worldcoin verification failed");
+        throw new Error(result.message || "Worldcoin verification failed");
       }
     } catch (error) {
       console.error("Worldcoin connection error:", error);
