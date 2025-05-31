@@ -13,8 +13,7 @@ import { ProtocolList } from "@/components/protocol-list";
 import { UserPositions } from "@/components/user-positions";
 import { TokenFaucet } from "@/components/token-faucet";
 import { CreateVaultModal } from "@/components/create-vault-modal";
-import { MiniKit } from "@worldcoin/minikit-js";
-import { getVaultAddress, getAvailableTokens } from "@/constants/contracts";
+import { getVaultAddress } from "@/constants/contracts";
 import { getVaults } from "@/lib/supabase";
 import { useChainId } from "wagmi";
 
@@ -49,7 +48,7 @@ const REAL_VAULTS: VaultData[] = [
     id: "flow-testnet-multi-token-vault",
     name: "Flow Testnet Multi-Token Vault",
     description:
-      "Experimental AI vault on Flow Testnet for testing multi-asset strategies",
+      "AI-powered USDC vault on Flow Testnet for optimized yield strategies",
     blockchain: "Flow Testnet",
     chainId: 545,
     contractAddress:
@@ -58,15 +57,13 @@ const REAL_VAULTS: VaultData[] = [
     apy: 16.5,
     tvl: 450000,
     riskLevel: "High",
-    aiStrategy: "Experimental Cross-Asset Yield Farming with AI Optimization",
+    aiStrategy: "AI-Powered USDC Yield Optimization",
     performance: 13.2,
     deposits: 320000,
     allocation: {
-      "USDC Strategies": 45,
-      "WBTC Yield": 30,
-      "WETH Farming": 25,
+      "USDC Strategies": 100,
     },
-    supportedTokens: getAvailableTokens("flowTestnet"),
+    supportedTokens: ["MockUSDC"],
   },
   {
     id: "rootstock-testnet-vault",
@@ -87,7 +84,7 @@ const REAL_VAULTS: VaultData[] = [
     allocation: {
       "USDC Lending": 100,
     },
-    supportedTokens: getAvailableTokens("rootstockTestnet"),
+    supportedTokens: ["MockUSDC"],
   },
 ];
 
@@ -127,9 +124,11 @@ export function DashboardLayout() {
       switch (blockchain.toLowerCase()) {
         case "flow testnet":
         case "flowTestnet":
+        case "flowtestnet":
           return 545;
         case "rootstock testnet":
         case "rootstockTestnet":
+        case "rootstocktestnet":
           return 31;
         default:
           return 1; // Default to mainnet
@@ -165,7 +164,6 @@ export function DashboardLayout() {
       const vaults = await getVaults();
       const mappedVaults = vaults.map(mapSupabaseVaultToVaultData);
       setSupabaseVaults(mappedVaults);
-      console.log("Loaded vaults from Supabase:", mappedVaults);
     } catch (error) {
       console.error("Error loading vaults from Supabase:", error);
     } finally {
@@ -185,7 +183,6 @@ export function DashboardLayout() {
     }
   }, [isCreateVaultModalOpen]);
 
-  console.log(MiniKit.isInstalled(), "isInstalled");
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
       <div className="flex flex-col lg:flex-row">

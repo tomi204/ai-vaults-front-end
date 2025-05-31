@@ -51,12 +51,6 @@ interface DepositModalProps {
   vault: VaultData | null;
 }
 
-// Hardcoded token restrictions per vault
-const VAULT_TOKEN_RESTRICTIONS = {
-  "flow-testnet-multi-token-vault": ["MockUSDC", "MockWBTC", "MockWETH"],
-  "rootstock-testnet-vault": ["MockUSDC"], // Only USDC for Rootstock
-} as const;
-
 // ERC20 ABI for token operations
 const ERC20_ABI = [
   {
@@ -146,22 +140,33 @@ export function DepositModal({
   } = useWriteContract();
 
   // Get allowed tokens for this vault
-  const getAllowedTokens = (vaultId: string) => {
-    return (
-      VAULT_TOKEN_RESTRICTIONS[
-        vaultId as keyof typeof VAULT_TOKEN_RESTRICTIONS
-      ] || []
-    );
+  const getAllowedTokens = () => {
+    // All vaults now only support USDC
+    return ["MockUSDC"];
   };
 
-  const allowedTokens = vault ? getAllowedTokens(vault.id) : [];
+  const allowedTokens = vault ? getAllowedTokens() : [];
+
+  // Helper function to map blockchain names to contract chain names
+  const getBlockchainName = (blockchain: string | undefined) => {
+    if (!blockchain) return "flowTestnet";
+
+    const lowerBlockchain = blockchain.toLowerCase();
+
+    if (lowerBlockchain.includes("flow")) {
+      return "flowTestnet";
+    } else if (lowerBlockchain.includes("rootstock")) {
+      return "rootstockTestnet";
+    } else {
+      // Default to flowTestnet
+      return "flowTestnet";
+    }
+  };
 
   // Get token addresses
   const selectedTokenAddress = selectedToken
     ? getTokenAddress(
-        vault?.blockchain === "Flow Testnet"
-          ? "flowTestnet"
-          : "rootstockTestnet",
+        getBlockchainName(vault?.blockchain),
         selectedToken as TokenName
       )
     : null;

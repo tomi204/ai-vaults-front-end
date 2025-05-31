@@ -103,11 +103,6 @@ export function VaultCard({
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleDepositClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDepositModalOpen(true);
-  };
-
   return (
     <Card
       className={`group relative cursor-pointer transition-all duration-500 ease-out overflow-hidden h-full flex flex-col
@@ -335,8 +330,15 @@ export function VaultCard({
         <div className="pt-4 mt-auto">
           <Button
             size="sm"
-            className="w-full bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:via-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
-            onClick={handleDepositClick}
+            className="w-full bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:via-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] relative z-10"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsDepositModalOpen(true);
+            }}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+            }}
           >
             <span className="mr-2">💰</span>
             Deposit
