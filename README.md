@@ -1,38 +1,19 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🤖 AI-Powered Vaults
 
-## Getting Started
+> **Advanced DeFi vault system with AI-driven strategy execution and multi-chain support**
 
-First, run the development server:
+## 📋 Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+AI-Powered Vaults is a sophisticated DeFi protocol that combines traditional ERC4626 vault functionality with AI-driven strategy execution. The system allows users to deposit assets into vaults while AI agents automatically optimize yield through whitelisted strategies including swaps, lending, and other DeFi protocols.
 
-```
+## 📋 Más repositorios e información
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Repositorio con los contratos: https://github.com/tomi204/AI-VAULTS
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Why does SPQRFi use off-chain AI agents?
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Off-chain yield farming analysis allows for a level of intelligence and adaptability that on-chain systems simply can’t match. AI agents operating off-chain have access to real-time data from across the web — including market trends, macroeconomic indicators, and on-chain analytics — giving them a broader and more accurate decision-making base.
 
-## Learn More
+They also benefit from advanced computational resources: high-speed processors, complex machine learning models, and constant upgrades, all without the limitations of gas fees, blockchain latency, or smart contract rigidity.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# ai-vaults-front-end
+The result? Smarter, faster, and more effective strategies that evolve with the market. SPQRFi harnesses this power to seek, compare, and execute the best DeFi opportunities for you — securely, intelligently, and with zero friction.
