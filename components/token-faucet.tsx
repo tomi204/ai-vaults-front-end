@@ -302,6 +302,13 @@ function ChainFaucet({ chainId, chainName, icon, color }: ChainFaucetProps) {
 }
 
 export function TokenFaucet() {
+  const currentChainId = useChainId();
+
+  // Filter faucets to show only the current chain
+  const currentChainFaucets = FAUCET_CHAINS.filter(
+    (chain) => chain.id === currentChainId
+  );
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -309,26 +316,42 @@ export function TokenFaucet() {
           Test Token Faucets
         </h2>
         <p className="text-slate-600 dark:text-slate-400">
-          Get free test USDC to experiment with the vaults
+          Get free test USDC to experiment with the vaults on{" "}
+          {currentChainId === 545
+            ? "Flow Testnet"
+            : currentChainId === 31
+            ? "Rootstock Testnet"
+            : "your current network"}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {FAUCET_CHAINS.map((chain) => (
-          <ChainFaucet
-            key={chain.id}
-            chainId={chain.id}
-            chainName={chain.name}
-            icon={chain.icon}
-            color={chain.color}
-          />
-        ))}
-      </div>
+      {currentChainFaucets.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {currentChainFaucets.map((chain) => (
+            <ChainFaucet
+              key={chain.id}
+              chainId={chain.id}
+              chainName={chain.name}
+              icon={chain.icon}
+              color={chain.color}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950 max-w-md mx-auto">
+            <AlertDescription className="text-yellow-700 dark:text-yellow-300 text-sm">
+              ⚠️ <strong>No faucet available:</strong> Please switch to Flow
+              Testnet or Rootstock Testnet to access the token faucets.
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       <div className="text-center">
         <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950 max-w-md mx-auto">
           <AlertDescription className="text-blue-700 dark:text-blue-300 text-sm">
-            �� <strong>Pro tip:</strong> Use these test tokens to try depositing
+            💡 <strong>Pro tip:</strong> Use these test tokens to try depositing
             into vaults and see how the AI strategies work!
           </AlertDescription>
         </Alert>

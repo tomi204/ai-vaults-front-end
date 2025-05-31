@@ -6,18 +6,19 @@ export type ChainName =
   | "arbitrum"
   | "arbitrumSepolia"
   | "baseSepolia"
-  | "flow"
   | "flowTestnet"
   | "rootstockTestnet";
 
 export type TokenName = "MockUSDC" | "MockWBTC" | "MockWETH";
 export type VaultName = "MultiTokenVault" | "Vault";
+export type FactoryName = "VaultFactory";
 export type PriceIdName = "BTC_USD" | "ETH_USD" | "USDC_USD";
 
 export interface ChainConfig {
   chainId: number;
   tokens: Partial<Record<TokenName, string>>;
   vaults: Partial<Record<VaultName, string>>;
+  factories: Partial<Record<FactoryName, string>>;
 }
 
 export interface TokenConfig {
@@ -31,36 +32,37 @@ export const CONTRACTS_CONFIG = {
       chainId: 31337,
       tokens: {},
       vaults: {},
+      factories: {},
     },
     sepolia: {
       chainId: 11155111,
       tokens: {},
       vaults: {},
+      factories: {},
     },
     mainnet: {
       chainId: 1,
       tokens: {},
       vaults: {},
+      factories: {},
     },
     arbitrum: {
       chainId: 42161,
       tokens: {},
       vaults: {},
+      factories: {},
     },
     arbitrumSepolia: {
       chainId: 421614,
       tokens: {},
       vaults: {},
+      factories: {},
     },
     baseSepolia: {
       chainId: 84532,
       tokens: {},
       vaults: {},
-    },
-    flow: {
-      chainId: 545,
-      tokens: {},
-      vaults: {},
+      factories: {},
     },
     flowTestnet: {
       chainId: 545,
@@ -72,6 +74,9 @@ export const CONTRACTS_CONFIG = {
       vaults: {
         MultiTokenVault: "0x7C65F77a4EbEa3D56368A73A12234bB4384ACB28",
       },
+      factories: {
+        VaultFactory: "0xc527C7a159263b3DfEde1b793C38734F45f7860d",
+      },
     },
     rootstockTestnet: {
       chainId: 31,
@@ -81,8 +86,14 @@ export const CONTRACTS_CONFIG = {
       vaults: {
         Vault: "0x8fDE7A649c782c96e7f4D9D88490a7C5031F51a9",
       },
+      factories: {
+        VaultFactory: "0x4f0798F0c3eb261D50b66e6b0f79Aa09803c900D",
+      },
     },
   } as Record<ChainName, ChainConfig>,
+
+  // Agent address for all vaults
+  defaultAgent: "0xb70649baF7A93EEB95E3946b3A82F8F312477d2b",
 
   priceIds: {
     BTC_USD:
@@ -290,4 +301,47 @@ export function getChainsWithContracts(): {
   return Object.entries(CONTRACTS_CONFIG.chains)
     .filter(([name]) => hasContractsDeployed(name as ChainName))
     .map(([name, config]) => ({ name: name as ChainName, config }));
+}
+
+/**
+ * Get factory address for a specific chain and factory
+ */
+export function getFactoryAddress(
+  chainName: ChainName,
+  factoryName: FactoryName
+): string | null {
+  const config = getChainConfig(chainName);
+  return config?.factories[factoryName] || null;
+}
+
+/**
+ * Get factory address by chain ID
+ */
+export function getFactoryAddressById(
+  chainId: number,
+  factoryName: FactoryName
+): string | null {
+  const chainInfo = getChainConfigById(chainId);
+  return chainInfo?.config.factories[factoryName] || null;
+}
+
+/**
+ * Get VaultFactory address for current chain
+ */
+export function getVaultFactoryAddress(chainName: ChainName): string | null {
+  return getFactoryAddress(chainName, "VaultFactory");
+}
+
+/**
+ * Get VaultFactory address by chain ID
+ */
+export function getVaultFactoryAddressById(chainId: number): string | null {
+  return getFactoryAddressById(chainId, "VaultFactory");
+}
+
+/**
+ * Get default agent address
+ */
+export function getDefaultAgentAddress(): string {
+  return CONTRACTS_CONFIG.defaultAgent;
 }

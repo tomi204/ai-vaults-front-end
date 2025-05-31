@@ -110,50 +110,69 @@ export function NavBar() {
               <span className="hidden lg:block text-sm text-slate-600 dark:text-slate-400">
                 Network:
               </span>
-              {isUnsupportedChain ? (
-                <div className="relative chain-menu-container">
-                  <Badge
-                    className={`${getNetworkColor(
-                      chainId
-                    )} cursor-pointer hover:opacity-80 transition-opacity`}
-                    onClick={() => setShowChainMenu(!showChainMenu)}
-                  >
-                    <span className="hidden sm:block">
-                      {isSwitchingChain ? "Switching..." : displayChainName}
-                    </span>
-                    <span className="sm:hidden">
-                      {isSwitchingChain ? "..." : shortChainName}
-                    </span>
-                  </Badge>
-                  {showChainMenu && (
-                    <div className="absolute top-full mt-2 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-2 min-w-[180px] z-50">
-                      <div className="space-y-1">
-                        <button
-                          onClick={() => handleChainSwitch(545)}
-                          className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-sm flex items-center gap-2"
-                          disabled={isSwitchingChain}
-                        >
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                          Flow Testnet
-                        </button>
-                        <button
-                          onClick={() => handleChainSwitch(31)}
-                          className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-sm flex items-center gap-2"
-                          disabled={isSwitchingChain}
-                        >
-                          <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                          Rootstock Testnet
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Badge className={getNetworkColor(chainId)}>
-                  <span className="hidden sm:block">{displayChainName}</span>
-                  <span className="sm:hidden">{shortChainName}</span>
+              <div className="relative chain-menu-container">
+                <Badge
+                  className={`${getNetworkColor(
+                    chainId
+                  )} cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1`}
+                  onClick={() => setShowChainMenu(!showChainMenu)}
+                >
+                  <span className="hidden sm:block">
+                    {isSwitchingChain ? "Switching..." : displayChainName}
+                  </span>
+                  <span className="sm:hidden">
+                    {isSwitchingChain ? "..." : shortChainName}
+                  </span>
+                  <span className="text-xs">▼</span>
                 </Badge>
-              )}
+                {showChainMenu && (
+                  <div className="absolute top-full mt-2 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-2 min-w-[180px] z-50">
+                    <div className="space-y-1">
+                      <button
+                        onClick={() => handleChainSwitch(545)}
+                        className={`w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-sm flex items-center gap-2 ${
+                          chainId === 545
+                            ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
+                            : ""
+                        }`}
+                        disabled={isSwitchingChain}
+                      >
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span>🌊 Flow Testnet</span>
+                        {chainId === 545 && (
+                          <span className="ml-auto text-green-600 dark:text-green-400">
+                            ✓
+                          </span>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleChainSwitch(31)}
+                        className={`w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-sm flex items-center gap-2 ${
+                          chainId === 31
+                            ? "bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800"
+                            : ""
+                        }`}
+                        disabled={isSwitchingChain}
+                      >
+                        <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                        <span>₿ Rootstock Testnet</span>
+                        {chainId === 31 && (
+                          <span className="ml-auto text-orange-600 dark:text-orange-400">
+                            ✓
+                          </span>
+                        )}
+                      </button>
+                      {isUnsupportedChain && (
+                        <div className="border-t border-slate-200 dark:border-slate-700 pt-2 mt-2">
+                          <div className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
+                            ⚠️ Current network not supported
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Wallet Info - Responsive */}
@@ -217,44 +236,64 @@ export function NavBar() {
             <span className="text-xs text-slate-600 dark:text-slate-400">
               Network:
             </span>
-            {isUnsupportedChain ? (
-              <div className="relative chain-menu-container">
-                <Badge
-                  className={`text-xs ${getNetworkColor(
-                    chainId
-                  )} cursor-pointer hover:opacity-80 transition-opacity`}
-                  onClick={() => setShowChainMenu(!showChainMenu)}
-                >
-                  {isSwitchingChain ? "Switching..." : displayChainName}
-                </Badge>
-                {showChainMenu && (
-                  <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-2 min-w-[180px] z-50">
-                    <div className="space-y-1">
-                      <button
-                        onClick={() => handleChainSwitch(545)}
-                        className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-sm flex items-center gap-2"
-                        disabled={isSwitchingChain}
-                      >
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        Flow Testnet
-                      </button>
-                      <button
-                        onClick={() => handleChainSwitch(31)}
-                        className="w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-sm flex items-center gap-2"
-                        disabled={isSwitchingChain}
-                      >
-                        <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                        Rootstock Testnet
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Badge className={`text-xs ${getNetworkColor(chainId)}`}>
-                {displayChainName}
+            <div className="relative chain-menu-container">
+              <Badge
+                className={`text-xs ${getNetworkColor(
+                  chainId
+                )} cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-1`}
+                onClick={() => setShowChainMenu(!showChainMenu)}
+              >
+                {isSwitchingChain ? "Switching..." : displayChainName}
+                <span className="text-xs">▼</span>
               </Badge>
-            )}
+              {showChainMenu && (
+                <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-2 min-w-[180px] z-50">
+                  <div className="space-y-1">
+                    <button
+                      onClick={() => handleChainSwitch(545)}
+                      className={`w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-sm flex items-center gap-2 ${
+                        chainId === 545
+                          ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
+                          : ""
+                      }`}
+                      disabled={isSwitchingChain}
+                    >
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span>🌊 Flow Testnet</span>
+                      {chainId === 545 && (
+                        <span className="ml-auto text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleChainSwitch(31)}
+                      className={`w-full text-left px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-sm flex items-center gap-2 ${
+                        chainId === 31
+                          ? "bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800"
+                          : ""
+                      }`}
+                      disabled={isSwitchingChain}
+                    >
+                      <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                      <span>₿ Rootstock Testnet</span>
+                      {chainId === 31 && (
+                        <span className="ml-auto text-orange-600 dark:text-orange-400">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                    {isUnsupportedChain && (
+                      <div className="border-t border-slate-200 dark:border-slate-700 pt-2 mt-2">
+                        <div className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
+                          ⚠️ Current network not supported
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>

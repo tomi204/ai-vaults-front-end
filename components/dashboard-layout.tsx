@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -12,8 +12,11 @@ import { NavBar } from "@/components/nav-bar";
 import { ProtocolList } from "@/components/protocol-list";
 import { UserPositions } from "@/components/user-positions";
 import { TokenFaucet } from "@/components/token-faucet";
+import { CreateVaultModal } from "@/components/create-vault-modal";
 import { MiniKit } from "@worldcoin/minikit-js";
 import { getVaultAddress, getAvailableTokens } from "@/constants/contracts";
+import { getVaults } from "@/lib/supabase";
+import { useChainId } from "wagmi";
 
 interface VaultData {
   id: string;
@@ -30,6 +33,14 @@ interface VaultData {
   deposits: number;
   allocation: Record<string, number>;
   supportedTokens: string[];
+}
+
+interface SupabaseVault {
+  id: number;
+  vaultaddress: string;
+  blockchain: string;
+  nombre: string;
+  symbol: string;
 }
 
 // Real vault data based on deployed contracts
@@ -81,9 +92,99 @@ const REAL_VAULTS: VaultData[] = [
 ];
 
 export function DashboardLayout() {
-  const [selectedVault, setSelectedVault] = useState(REAL_VAULTS[0]);
   const [activeTab, setActiveTab] = useState("overview");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCreateVaultModalOpen, setIsCreateVaultModalOpen] = useState(false);
+  const [supabaseVaults, setSupabaseVaults] = useState<VaultData[]>([]);
+  const [isLoadingVaults, setIsLoadingVaults] = useState(true);
+  const [selectedVault, setSelectedVault] = useState<VaultData | null>(null);
+
+  // Get current chain ID to filter vaults and faucet
+  const currentChainId = useChainId();
+
+  // Combine hardcoded vaults with Supabase vaults and filter by current chain
+  const allVaults = [...REAL_VAULTS, ...supabaseVaults];
+  const filteredVaults = allVaults.filter(
+    (vault) => vault.chainId === currentChainId
+  );
+
+  // Update selectedVault when filteredVaults changes
+  useEffect(() => {
+    if (
+      filteredVaults.length > 0 &&
+      (!selectedVault || !filteredVaults.find((v) => v.id === selectedVault.id))
+    ) {
+      setSelectedVault(filteredVaults[0]);
+    } else if (filteredVaults.length === 0) {
+      setSelectedVault(null);
+    }
+  }, [filteredVaults, selectedVault]);
+
+  // Map Supabase vault to VaultData format
+  const mapSupabaseVaultToVaultData = (vault: SupabaseVault): VaultData => {
+    // Get chain ID based on blockchain name
+    const getChainIdFromBlockchain = (blockchain: string): number => {
+      switch (blockchain.toLowerCase()) {
+        case "flow testnet":
+        case "flowTestnet":
+          return 545;
+        case "rootstock testnet":
+        case "rootstockTestnet":
+          return 31;
+        default:
+          return 1; // Default to mainnet
+      }
+    };
+
+    const chainId = getChainIdFromBlockchain(vault.blockchain);
+
+    return {
+      id: `supabase-${vault.id}`,
+      name: vault.nombre,
+      description: `AI-managed vault created by users on ${vault.blockchain}`,
+      blockchain: vault.blockchain,
+      chainId,
+      contractAddress: vault.vaultaddress,
+      apy: 12.5, // Default values for user-created vaults
+      tvl: 0, // Will be updated when we can read from contract
+      riskLevel: "Medium",
+      aiStrategy: "AI-Powered Multi-Asset Strategy",
+      performance: 8.7,
+      deposits: 0,
+      allocation: {
+        "USDC Strategies": 100, // Since all user vaults use USDC
+      },
+      supportedTokens: ["MockUSDC"], // All user vaults support USDC
+    };
+  };
+
+  // Load vaults from Supabase
+  const loadSupabaseVaults = async () => {
+    try {
+      setIsLoadingVaults(true);
+      const vaults = await getVaults();
+      const mappedVaults = vaults.map(mapSupabaseVaultToVaultData);
+      setSupabaseVaults(mappedVaults);
+      console.log("Loaded vaults from Supabase:", mappedVaults);
+    } catch (error) {
+      console.error("Error loading vaults from Supabase:", error);
+    } finally {
+      setIsLoadingVaults(false);
+    }
+  };
+
+  // Load vaults on component mount
+  useEffect(() => {
+    loadSupabaseVaults();
+  }, []);
+
+  // Reload vaults when modal closes (in case a new vault was created)
+  useEffect(() => {
+    if (!isCreateVaultModalOpen) {
+      loadSupabaseVaults();
+    }
+  }, [isCreateVaultModalOpen]);
+
   console.log(MiniKit.isInstalled(), "isInstalled");
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
@@ -165,6 +266,10 @@ export function DashboardLayout() {
                 <Button
                   size="sm"
                   className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-xs"
+                  onClick={() => {
+                    setIsCreateVaultModalOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
                 >
                   🚀 Deploy New Vault
                 </Button>
@@ -258,7 +363,17 @@ export function DashboardLayout() {
                 className="space-y-4 lg:space-y-6 mt-0"
               >
                 {/* Stats Overview */}
-                <StatsOverview vaults={REAL_VAULTS} />
+                <StatsOverview vaults={filteredVaults} />
+
+                {/* Loading indicator */}
+                {isLoadingVaults && (
+                  <div className="flex items-center justify-center p-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span className="ml-2 text-slate-600 dark:text-slate-400">
+                      Loading vaults...
+                    </span>
+                  </div>
+                )}
 
                 {/* Vaults Section */}
                 <div className="space-y-4 lg:space-y-6">
@@ -268,27 +383,55 @@ export function DashboardLayout() {
                         Your Active Vaults
                       </h2>
                       <p className="text-sm lg:text-base text-slate-600 dark:text-slate-400">
-                        AI-managed strategies across multiple chains
+                        AI-managed strategies on{" "}
+                        {currentChainId === 545
+                          ? "Flow Testnet"
+                          : currentChainId === 31
+                          ? "Rootstock Testnet"
+                          : "your current network"}
                       </p>
                     </div>
                     <Button
                       size="sm"
                       className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 w-full sm:w-auto"
+                      onClick={() => setIsCreateVaultModalOpen(true)}
                     >
                       🚀 Create New Vault
                     </Button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6">
-                    {REAL_VAULTS.map((vault) => (
-                      <VaultCard
-                        key={vault.id}
-                        vault={vault}
-                        onSelect={() => setSelectedVault(vault)}
-                        isSelected={selectedVault.id === vault.id}
-                      />
-                    ))}
-                  </div>
+                  {!isLoadingVaults && filteredVaults.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950 max-w-lg mx-auto">
+                        <AlertDescription className="text-yellow-700 dark:text-yellow-300">
+                          <div className="flex flex-col items-center gap-3">
+                            <span className="text-3xl">🏦</span>
+                            <div>
+                              <strong>
+                                No vaults available on this network
+                              </strong>
+                              <p className="mt-1 text-sm">
+                                Switch to Flow Testnet or Rootstock Testnet to
+                                see available vaults, or create a new vault on
+                                your current network.
+                              </p>
+                            </div>
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6">
+                      {filteredVaults.map((vault) => (
+                        <VaultCard
+                          key={vault.id}
+                          vault={vault}
+                          onSelect={() => setSelectedVault(vault)}
+                          isSelected={selectedVault?.id === vault.id}
+                        />
+                      ))}
+                    </div>
+                  )}
 
                   {/* Protocol Integrations */}
                   <ProtocolList />
@@ -305,28 +448,54 @@ export function DashboardLayout() {
                       AI-Managed Vaults
                     </h2>
                     <p className="text-sm lg:text-base text-slate-600 dark:text-slate-400">
-                      Discover and invest in algorithmic trading strategies
+                      Discover and invest in algorithmic trading strategies on{" "}
+                      {currentChainId === 545
+                        ? "Flow Testnet"
+                        : currentChainId === 31
+                        ? "Rootstock Testnet"
+                        : "your current network"}
                     </p>
                   </div>
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 w-full sm:w-auto"
+                    onClick={() => setIsCreateVaultModalOpen(true)}
                   >
                     🚀 Create New Vault
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6">
-                  {REAL_VAULTS.map((vault) => (
-                    <VaultCard
-                      key={vault.id}
-                      vault={vault}
-                      onSelect={() => setSelectedVault(vault)}
-                      isSelected={selectedVault.id === vault.id}
-                      showFullDetails
-                    />
-                  ))}
-                </div>
+                {!isLoadingVaults && filteredVaults.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950 max-w-lg mx-auto">
+                      <AlertDescription className="text-yellow-700 dark:text-yellow-300">
+                        <div className="flex flex-col items-center gap-3">
+                          <span className="text-3xl">🚀</span>
+                          <div>
+                            <strong>No vaults found on this network</strong>
+                            <p className="mt-1 text-sm">
+                              Switch to Flow Testnet or Rootstock Testnet to
+                              discover existing vaults, or be the first to
+                              create a vault on your current network!
+                            </p>
+                          </div>
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6">
+                    {filteredVaults.map((vault) => (
+                      <VaultCard
+                        key={vault.id}
+                        vault={vault}
+                        onSelect={() => setSelectedVault(vault)}
+                        isSelected={selectedVault?.id === vault.id}
+                        showFullDetails
+                      />
+                    ))}
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent
@@ -350,7 +519,7 @@ export function DashboardLayout() {
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-4">
-                          {REAL_VAULTS.map((vault) => (
+                          {filteredVaults.map((vault) => (
                             <div
                               key={vault.id}
                               className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800"
@@ -417,6 +586,12 @@ export function DashboardLayout() {
           </main>
         </div>
       </div>
+
+      {/* Create Vault Modal */}
+      <CreateVaultModal
+        isOpen={isCreateVaultModalOpen}
+        onOpenChange={setIsCreateVaultModalOpen}
+      />
     </div>
   );
 }
