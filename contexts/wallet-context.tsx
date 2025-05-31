@@ -42,8 +42,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const { data: rainbowBalance } = useBalance({ address: rainbowAddress });
   const { disconnect: rainbowDisconnect } = useDisconnect();
 
-  // Worldcoin state
-  const isWorldcoinInstalled = MiniKit.isInstalled();
+  // Worldcoin state - Handle the case when MiniKit is not available
+  const isWorldcoinInstalled = typeof window !== 'undefined' ? MiniKit?.isInstalled?.() || false : false;
 
   // Determinar estado general
   const isConnected =

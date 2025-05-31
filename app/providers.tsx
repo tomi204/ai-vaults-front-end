@@ -5,8 +5,11 @@ import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { config } from "./wagmi";
 import { WalletProvider } from "@/contexts/wallet-context";
+import { MiniKitProvider } from '@worldcoin/minikit-js/minikit-provider';
+import { useEffect, useState } from "react";
 
 import "@rainbow-me/rainbowkit/styles.css";
+import { MiniKit } from "@worldcoin/minikit-js";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,7 +21,16 @@ const queryClient = new QueryClient({
   },
 });
 
+// Add your World App ID here
+const WORLD_APP_ID = process.env.NEXT_PUBLIC_WORLD_APP_ID || '';
+
 export function Providers({ children }: { children: React.ReactNode }) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <WagmiProvider config={config} reconnectOnMount={false}>
       <QueryClientProvider client={queryClient}>
@@ -28,7 +40,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
           showRecentTransactions={false}
           coolMode={true}
         >
-          <WalletProvider>{children}</WalletProvider>
+            <MiniKitProvider props={{ appId: WORLD_APP_ID }}>
+              <WalletProvider>{children}</WalletProvider>
+            </MiniKitProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
