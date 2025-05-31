@@ -10,6 +10,7 @@ import { StatsOverview } from "@/components/stats-overview";
 import { TransactionHistory } from "@/components/transaction-history";
 import { NavBar } from "@/components/nav-bar";
 import { ProtocolList } from "@/components/protocol-list";
+import { UserPositions } from "@/components/user-positions";
 import { MiniKit } from "@worldcoin/minikit-js";
 import { getVaultAddress, getAvailableTokens } from "@/constants/contracts";
 
@@ -33,29 +34,6 @@ interface VaultData {
 // Real vault data based on deployed contracts
 const REAL_VAULTS: VaultData[] = [
   {
-    id: "base-multi-token-vault",
-    name: "Base Multi-Token Vault",
-    description:
-      "AI-powered multi-asset vault on Base network with USDC, WBTC, and WETH strategies",
-    blockchain: "Base",
-    chainId: 8453,
-    contractAddress:
-      getVaultAddress("base", "MultiTokenVault") ||
-      "0x7C65F77a4EbEa3D56368A73A12234bB4384ACB28",
-    apy: 14.2,
-    tvl: 1250000,
-    riskLevel: "Medium",
-    aiStrategy: "Multi-Asset Yield Optimization with Dynamic Rebalancing",
-    performance: 11.8,
-    deposits: 850000,
-    allocation: {
-      "USDC Lending": 40,
-      "WBTC Strategies": 35,
-      "WETH Yield": 25,
-    },
-    supportedTokens: getAvailableTokens("base"),
-  },
-  {
     id: "flow-testnet-multi-token-vault",
     name: "Flow Testnet Multi-Token Vault",
     description:
@@ -77,6 +55,27 @@ const REAL_VAULTS: VaultData[] = [
       "WETH Farming": 25,
     },
     supportedTokens: getAvailableTokens("flowTestnet"),
+  },
+  {
+    id: "rootstock-testnet-vault",
+    name: "Rootstock Testnet Vault",
+    description:
+      "AI-powered USDC vault on Rootstock Testnet with Bitcoin DeFi integration",
+    blockchain: "Rootstock Testnet",
+    chainId: 31,
+    contractAddress:
+      getVaultAddress("rootstockTestnet", "Vault") ||
+      "0x8fDE7A649c782c96e7f4D9D88490a7C5031F51a9",
+    apy: 18.2,
+    tvl: 750000,
+    riskLevel: "Medium",
+    aiStrategy: "Bitcoin-backed USDC Yield Optimization",
+    performance: 15.1,
+    deposits: 580000,
+    allocation: {
+      "USDC Lending": 100,
+    },
+    supportedTokens: getAvailableTokens("rootstockTestnet"),
   },
 ];
 
@@ -335,14 +334,18 @@ export function DashboardLayout() {
                 className="space-y-4 lg:space-y-6 mt-0"
               >
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
-                  <div className="xl:col-span-2">
+                  {/* User Positions - takes up 2 columns */}
+                  <div className="xl:col-span-2 space-y-4 lg:space-y-6">
+                    <UserPositions />
                     <TransactionHistory />
                   </div>
+
+                  {/* Side panel - Portfolio summary */}
                   <div className="space-y-4 lg:space-y-6">
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-lg lg:text-xl">
-                          Portfolio Allocation
+                          Portfolio Summary
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
@@ -350,7 +353,7 @@ export function DashboardLayout() {
                           {REAL_VAULTS.map((vault) => (
                             <div
                               key={vault.id}
-                              className="flex items-center justify-between"
+                              className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800"
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>

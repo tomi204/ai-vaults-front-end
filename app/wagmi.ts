@@ -1,9 +1,9 @@
 import { http, createConfig } from "wagmi";
 import { injected } from "wagmi/connectors";
-import { base, rootstock, rootstockTestnet } from "wagmi/chains";
+import { base, rootstock, rootstockTestnet, flowTestnet } from "wagmi/chains";
 
 export const config = createConfig({
-  chains: [base, rootstock, rootstockTestnet],
+  chains: [base, rootstock, rootstockTestnet, flowTestnet],
   connectors: [
     injected(), // Solo MetaMask/Injected wallets
   ],
@@ -11,6 +11,7 @@ export const config = createConfig({
     [base.id]: http(),
     [rootstock.id]: http(),
     [rootstockTestnet.id]: http(),
+    [flowTestnet.id]: http(),
   },
   ssr: true,
   storage: undefined, // Desactivar almacenamiento automático

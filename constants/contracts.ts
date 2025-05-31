@@ -5,13 +5,13 @@ export type ChainName =
   | "mainnet"
   | "arbitrum"
   | "arbitrumSepolia"
-  | "base"
   | "baseSepolia"
   | "flow"
-  | "flowTestnet";
+  | "flowTestnet"
+  | "rootstockTestnet";
 
 export type TokenName = "MockUSDC" | "MockWBTC" | "MockWETH";
-export type VaultName = "MultiTokenVault";
+export type VaultName = "MultiTokenVault" | "Vault";
 export type PriceIdName = "BTC_USD" | "ETH_USD" | "USDC_USD";
 
 export interface ChainConfig {
@@ -52,17 +52,6 @@ export const CONTRACTS_CONFIG = {
       tokens: {},
       vaults: {},
     },
-    base: {
-      chainId: 8453,
-      tokens: {
-        MockUSDC: "0xAF28B48E48317109F885FEc05751f5422d850857",
-        MockWBTC: "0x8fDE7A649c782c96e7f4D9D88490a7C5031F51a9",
-        MockWETH: "0xF3B66dEF94Ab0C8D485e36845f068aFB48959A04",
-      },
-      vaults: {
-        MultiTokenVault: "0x7C65F77a4EbEa3D56368A73A12234bB4384ACB28",
-      },
-    },
     baseSepolia: {
       chainId: 84532,
       tokens: {},
@@ -82,6 +71,15 @@ export const CONTRACTS_CONFIG = {
       },
       vaults: {
         MultiTokenVault: "0x7C65F77a4EbEa3D56368A73A12234bB4384ACB28",
+      },
+    },
+    rootstockTestnet: {
+      chainId: 31,
+      tokens: {
+        MockUSDC: "0xAF28B48E48317109F885FEc05751f5422d850857",
+      },
+      vaults: {
+        Vault: "0x8fDE7A649c782c96e7f4D9D88490a7C5031F51a9",
       },
     },
   } as Record<ChainName, ChainConfig>,
