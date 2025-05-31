@@ -11,12 +11,15 @@ import { TransactionHistory } from "@/components/transaction-history";
 import { NavBar } from "@/components/nav-bar";
 import { ProtocolList } from "@/components/protocol-list";
 import { MiniKit } from "@worldcoin/minikit-js";
+import { getVaultAddress, getAvailableTokens } from "@/constants/contracts";
 
 interface VaultData {
   id: string;
   name: string;
   description: string;
   blockchain: string;
+  chainId: number;
+  contractAddress: string;
   apy: number;
   tvl: number;
   riskLevel: string;
@@ -24,80 +27,61 @@ interface VaultData {
   performance: number;
   deposits: number;
   allocation: Record<string, number>;
+  supportedTokens: string[];
 }
 
-const MOCK_VAULTS: VaultData[] = [
+// Real vault data based on deployed contracts
+const REAL_VAULTS: VaultData[] = [
   {
-    id: "1",
-    name: "Ethereum Prime Vault",
-    description: "High-yield DeFi strategies on Ethereum",
-    blockchain: "Ethereum",
-    apy: 12.5,
-    tvl: 2840000,
-    riskLevel: "Medium",
-    aiStrategy: "Morpho Blue + Aave V3 Optimization",
-    performance: 8.2,
-    deposits: 1200000,
-    allocation: {
-      Lending: 45,
-      "Yield Farming": 35,
-      "Liquidity Mining": 20,
-    },
-  },
-  {
-    id: "2",
-    name: "Arbitrum Velocity Vault",
-    description: "Aggressive L2 yield optimization",
-    blockchain: "Arbitrum",
-    apy: 18.7,
-    tvl: 890000,
-    riskLevel: "High",
-    aiStrategy: "GMX + Camelot Dynamic Rebalancing",
-    performance: 15.3,
-    deposits: 650000,
-    allocation: {
-      "Perp Trading": 50,
-      "LP Farming": 30,
-      Lending: 20,
-    },
-  },
-  {
-    id: "3",
-    name: "Polygon Stable Vault",
-    description: "Conservative stablecoin strategies",
-    blockchain: "Polygon",
-    apy: 6.8,
-    tvl: 1560000,
-    riskLevel: "Low",
-    aiStrategy: "Aave + Compound Stable Optimization",
-    performance: 6.1,
-    deposits: 980000,
-    allocation: {
-      "Stable Lending": 70,
-      "Stable LPs": 30,
-    },
-  },
-  {
-    id: "4",
-    name: "Optimism Growth Vault",
-    description: "Balanced growth on Optimism",
-    blockchain: "Optimism",
+    id: "base-multi-token-vault",
+    name: "Base Multi-Token Vault",
+    description:
+      "AI-powered multi-asset vault on Base network with USDC, WBTC, and WETH strategies",
+    blockchain: "Base",
+    chainId: 8453,
+    contractAddress:
+      getVaultAddress("base", "MultiTokenVault") ||
+      "0x7C65F77a4EbEa3D56368A73A12234bB4384ACB28",
     apy: 14.2,
-    tvl: 720000,
+    tvl: 1250000,
     riskLevel: "Medium",
-    aiStrategy: "Velodrome + Beethoven X Strategy",
+    aiStrategy: "Multi-Asset Yield Optimization with Dynamic Rebalancing",
     performance: 11.8,
-    deposits: 520000,
+    deposits: 850000,
     allocation: {
-      "DEX LPs": 40,
-      "Yield Farming": 35,
-      Lending: 25,
+      "USDC Lending": 40,
+      "WBTC Strategies": 35,
+      "WETH Yield": 25,
     },
+    supportedTokens: getAvailableTokens("base"),
+  },
+  {
+    id: "flow-testnet-multi-token-vault",
+    name: "Flow Testnet Multi-Token Vault",
+    description:
+      "Experimental AI vault on Flow Testnet for testing multi-asset strategies",
+    blockchain: "Flow Testnet",
+    chainId: 545,
+    contractAddress:
+      getVaultAddress("flowTestnet", "MultiTokenVault") ||
+      "0x7C65F77a4EbEa3D56368A73A12234bB4384ACB28",
+    apy: 16.5,
+    tvl: 450000,
+    riskLevel: "High",
+    aiStrategy: "Experimental Cross-Asset Yield Farming with AI Optimization",
+    performance: 13.2,
+    deposits: 320000,
+    allocation: {
+      "USDC Strategies": 45,
+      "WBTC Yield": 30,
+      "WETH Farming": 25,
+    },
+    supportedTokens: getAvailableTokens("flowTestnet"),
   },
 ];
 
 export function DashboardLayout() {
-  const [selectedVault, setSelectedVault] = useState(MOCK_VAULTS[0]);
+  const [selectedVault, setSelectedVault] = useState(REAL_VAULTS[0]);
   const [activeTab, setActiveTab] = useState("overview");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   console.log(MiniKit.isInstalled(), "isInstalled");
@@ -275,7 +259,7 @@ export function DashboardLayout() {
                 className="space-y-4 lg:space-y-6 mt-0"
               >
                 {/* Stats Overview */}
-                <StatsOverview vaults={MOCK_VAULTS} />
+                <StatsOverview vaults={REAL_VAULTS} />
 
                 {/* Vaults Section */}
                 <div className="space-y-4 lg:space-y-6">
@@ -297,7 +281,7 @@ export function DashboardLayout() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6">
-                    {MOCK_VAULTS.map((vault) => (
+                    {REAL_VAULTS.map((vault) => (
                       <VaultCard
                         key={vault.id}
                         vault={vault}
@@ -334,7 +318,7 @@ export function DashboardLayout() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6">
-                  {MOCK_VAULTS.map((vault) => (
+                  {REAL_VAULTS.map((vault) => (
                     <VaultCard
                       key={vault.id}
                       vault={vault}
@@ -363,7 +347,7 @@ export function DashboardLayout() {
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-4">
-                          {MOCK_VAULTS.map((vault) => (
+                          {REAL_VAULTS.map((vault) => (
                             <div
                               key={vault.id}
                               className="flex items-center justify-between"

@@ -5,6 +5,8 @@ interface VaultData {
   name: string;
   description: string;
   blockchain: string;
+  chainId: number;
+  contractAddress: string;
   apy: number;
   tvl: number;
   riskLevel: string;
@@ -12,6 +14,7 @@ interface VaultData {
   performance: number;
   deposits: number;
   allocation: Record<string, number>;
+  supportedTokens: string[];
 }
 
 interface StatsOverviewProps {

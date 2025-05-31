@@ -8,12 +8,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useState } from "react";
+import { DepositModal } from "./deposit-modal";
 
 interface VaultData {
   id: string;
   name: string;
   description: string;
   blockchain: string;
+  chainId: number;
+  contractAddress: string;
   apy: number;
   tvl: number;
   riskLevel: string;
@@ -21,6 +25,7 @@ interface VaultData {
   performance: number;
   deposits: number;
   allocation: Record<string, number>;
+  supportedTokens: string[];
 }
 
 interface VaultCardProps {
@@ -40,6 +45,10 @@ const getBlockchainColor = (blockchain: string) => {
       return "from-violet-500 to-violet-600";
     case "Optimism":
       return "from-red-500 to-red-600";
+    case "Base":
+      return "from-blue-400 to-indigo-500";
+    case "Flow Testnet":
+      return "from-green-400 to-emerald-500";
     default:
       return "from-gray-500 to-gray-600";
   }
@@ -64,6 +73,13 @@ export function VaultCard({
   isSelected,
   showFullDetails,
 }: VaultCardProps) {
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+
+  const handleDepositClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card selection when clicking deposit
+    setIsDepositModalOpen(true);
+  };
+
   return (
     <Card
       className={`relative cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 ${
@@ -160,6 +176,50 @@ export function VaultCard({
                 )
               )}
             </div>
+
+            {/* Supported Tokens */}
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Supported Tokens
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {vault.supportedTokens.map((token) => (
+                  <Badge
+                    key={token}
+                    variant="neutral"
+                    className="text-xs bg-slate-100 dark:bg-slate-800"
+                  >
+                    {token}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            {/* Contract Information */}
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Contract Details
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Chain ID:
+                  </span>
+                  <span className="font-mono text-slate-900 dark:text-white">
+                    {vault.chainId}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Contract:
+                  </span>
+                  <span className="font-mono text-slate-900 dark:text-white">
+                    {vault.contractAddress.slice(0, 6)}...
+                    {vault.contractAddress.slice(-4)}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -167,6 +227,7 @@ export function VaultCard({
           <Button
             size="sm"
             className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            onClick={handleDepositClick}
           >
             💰 Deposit
           </Button>
@@ -175,6 +236,13 @@ export function VaultCard({
           </Button>
         </div>
       </CardContent>
+
+      {/* Deposit Modal */}
+      <DepositModal
+        isOpen={isDepositModalOpen}
+        onOpenChange={setIsDepositModalOpen}
+        vault={vault}
+      />
     </Card>
   );
 }
