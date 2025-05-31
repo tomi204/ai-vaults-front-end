@@ -11,6 +11,7 @@ import { TransactionHistory } from "@/components/transaction-history";
 import { NavBar } from "@/components/nav-bar";
 import { ProtocolList } from "@/components/protocol-list";
 import { UserPositions } from "@/components/user-positions";
+import { TokenFaucet } from "@/components/token-faucet";
 import { MiniKit } from "@worldcoin/minikit-js";
 import { getVaultAddress, getAvailableTokens } from "@/constants/contracts";
 
@@ -117,7 +118,7 @@ export function DashboardLayout() {
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
             <div className="p-4 bg-white/95 dark:bg-slate-950/95 border-b border-slate-200/60 dark:border-slate-800/60">
-              <nav className="grid grid-cols-3 gap-2 mb-4">
+              <nav className="grid grid-cols-2 gap-2 mb-4">
                 <Button
                   variant={activeTab === "overview" ? "default" : "neutral"}
                   className="text-xs"
@@ -147,6 +148,16 @@ export function DashboardLayout() {
                   }}
                 >
                   💼 Portfolio
+                </Button>
+                <Button
+                  variant={activeTab === "faucet" ? "default" : "neutral"}
+                  className="text-xs"
+                  onClick={() => {
+                    setActiveTab("faucet");
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  🚰 Faucet
                 </Button>
               </nav>
 
@@ -209,25 +220,14 @@ export function DashboardLayout() {
               >
                 💼 Portfolio
               </Button>
-            </nav>
-
-            <div className="mt-8 space-y-3">
-              <h3 className="font-semibold text-sm text-slate-700 dark:text-slate-300 px-3">
-                Quick Actions
-              </h3>
               <Button
-                size="sm"
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                variant={activeTab === "faucet" ? "default" : "neutral"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("faucet")}
               >
-                🚀 Deploy New Vault
+                🚰 Faucet
               </Button>
-              <Button size="sm" variant="neutral" className="w-full">
-                💰 Add Funds
-              </Button>
-              <Button size="sm" variant="neutral" className="w-full">
-                📤 Withdraw
-              </Button>
-            </div>
+            </nav>
 
             <div className="mt-8">
               <Alert className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950 dark:to-green-950 border-emerald-200 dark:border-emerald-800">
@@ -405,6 +405,13 @@ export function DashboardLayout() {
                     </Card>
                   </div>
                 </div>
+              </TabsContent>
+
+              <TabsContent
+                value="faucet"
+                className="space-y-4 lg:space-y-6 mt-0"
+              >
+                <TokenFaucet />
               </TabsContent>
             </Tabs>
           </main>

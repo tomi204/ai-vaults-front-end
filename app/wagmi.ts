@@ -14,5 +14,5 @@ export const config = createConfig({
     [flowTestnet.id]: http(),
   },
   ssr: true,
-  storage: undefined, // Desactivar almacenamiento automático
+  // storage: undefined, // Comentado para permitir persistencia de wallet
 });
