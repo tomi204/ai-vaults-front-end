@@ -21,6 +21,38 @@ SPQRFi is a sophisticated DeFi protocol that combines traditional ERC4626 vault 
 
 ## 🧠 AI Agent Architecture
 
+## System Overview
+
+```mermaid
+graph TB
+    subgraph SPQR["SPQR Agent"]
+        LLM[LLM Planner]
+        Risk[Risk Model]
+        KB[Knowledge Box]
+        Exec[Strategy Executor]
+        
+        subgraph Providers["Data Providers"]
+            RS[Rootstock Provider]
+            FS[Flow Strategy Provider]
+            KP[KittyPunch Provider]
+            BS[Blockscout Provider]
+        end
+        
+        LLM --> Risk
+        Risk --> Exec
+        KB --> LLM
+        Providers --> KB
+    end
+    
+    subgraph Markets["DeFi Markets"]
+        RS --> |Monitor| Rootstock
+        FS --> |Monitor| Flow
+        KP --> |Monitor| KittyPunch
+    end
+```
+
+For a detailed view of the system architecture, including strategy flows, risk assessment, and monitoring parameters, see our [SPQR Architecture Documentation](github.com/lausuarez02/SPQR-AI-vaults-praha/docs/SPQR_ARCHITECTURE.md).
+
 The SPQR Agent is our deterministic AI system that:
 
 ### Core Capabilities
