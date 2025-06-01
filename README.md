@@ -1,5 +1,6 @@
 # 🤖 SPQRFi
 
+
 > **Advanced DeFi vault system with AI-driven strategy execution and multi-chain support**
 
 ![SPQRFi Demo](public/demo-spqr.gif)
