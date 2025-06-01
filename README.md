@@ -2,7 +2,7 @@
 
 > **Advanced DeFi vault system with AI-driven strategy execution and multi-chain support**
 
-![SPQRFi DeFAI Super Vaults](header.gif)
+![SPQRFi Demo](public/demo-spqr.gif)
 
 ## 📋 Overview
 
