@@ -49,6 +49,7 @@ interface DepositModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   vault: VaultData | null;
+  goToFaucet: () => void;
 }
 
 // ERC20 ABI for token operations
@@ -107,6 +108,7 @@ export function DepositModal({
   isOpen,
   onOpenChange,
   vault,
+  goToFaucet,
 }: DepositModalProps) {
   const [selectedToken, setSelectedToken] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
@@ -561,6 +563,7 @@ export function DepositModal({
                       )}
                     </div>
                     <Input
+                      disabled={tokenBalance === BigInt(0)}
                       id="amount"
                       type="number"
                       placeholder="0.0"
@@ -569,6 +572,29 @@ export function DepositModal({
                       step="any"
                       min="0"
                     />
+
+                    {tokenBalance === BigInt(0) && (
+                      <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
+                        <AlertDescription className="text-blue-700 dark:text-blue-300 text-sm">
+                          You don't have enough tokens to complete this
+                          transaction. We recommend visiting the faucet to get
+                          more tokens and proceed. To do so, simply click the
+                          button below.
+                          <div className="mt-4 flex justify-center">
+                            <Button
+                              onClick={() => {
+                                // Go to faucet
+                                goToFaucet();
+                              }}
+                              variant="default"
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                              Go to Faucet
+                            </Button>
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
 
                     {hasInsufficientBalance && (
                       <Alert className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950">

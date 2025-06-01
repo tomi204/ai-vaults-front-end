@@ -33,6 +33,7 @@ interface VaultCardProps {
   onSelect: () => void;
   isSelected: boolean;
   showFullDetails?: boolean;
+  goToFaucet: () => void;
 }
 
 const getBlockchainColor = (blockchain: string) => {
@@ -99,6 +100,7 @@ export function VaultCard({
   onSelect,
   isSelected,
   showFullDetails,
+  goToFaucet,
 }: VaultCardProps) {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -348,6 +350,7 @@ export function VaultCard({
 
       {/* Deposit Modal */}
       <DepositModal
+        goToFaucet={goToFaucet}
         isOpen={isDepositModalOpen}
         onOpenChange={setIsDepositModalOpen}
         vault={vault}
