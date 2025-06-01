@@ -51,7 +51,7 @@ graph TB
     end
 ```
 
-For a detailed view of the system architecture, including strategy flows, risk assessment, and monitoring parameters, see our [SPQR Architecture Documentation]([https://github.com/lausuarez02/SPQR-AI-vaults-praha/docs/SPQR_ARCHITECTURE.md](https://github.com/lausuarez02/SPQR-AI-vaults-praha/blob/main/docs/SPQR_ARCHITECTURE.md)).
+For a detailed view of the system architecture, including strategy flows, risk assessment, and monitoring parameters, see our [SPQR Architecture Documentation](https://github.com/lausuarez02/SPQR-AI-vaults-praha/blob/main/docs/SPQR_ARCHITECTURE.md).
 
 The SPQR Agent is our deterministic AI system that:
 
