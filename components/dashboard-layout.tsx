@@ -157,6 +157,11 @@ export function DashboardLayout() {
     };
   };
 
+  const goToFaucet = () => {
+    setActiveTab("faucet");
+    setIsMobileMenuOpen(false);
+  };
+
   // Load vaults from Supabase
   const loadSupabaseVaults = async () => {
     try {
@@ -421,6 +426,7 @@ export function DashboardLayout() {
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6">
                       {filteredVaults.map((vault) => (
                         <VaultCard
+                          goToFaucet={goToFaucet}
                           key={vault.id}
                           vault={vault}
                           onSelect={() => setSelectedVault(vault)}
@@ -484,6 +490,7 @@ export function DashboardLayout() {
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6">
                     {filteredVaults.map((vault) => (
                       <VaultCard
+                        goToFaucet={goToFaucet}
                         key={vault.id}
                         vault={vault}
                         onSelect={() => setSelectedVault(vault)}
